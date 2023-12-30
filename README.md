@@ -2,7 +2,7 @@
 
 Our graal : Predict the price of bitcoin for the next day !
 
-We usually take advantage of models capable of  detecting patterns on time series (lstm, arima, prophet…).
+We usually take advantage of models capable of detecting patterns on time series (lstm, arima, prophet…).
 Often models are univariate, based on the historical price evolution of the asset, and sometimes multivariate with a few features.
 
 We propose here to treat the subject in a different way, considering that historical prices can’t help us to find the futur price.
