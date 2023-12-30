@@ -61,28 +61,31 @@ def price_prediction(model_name, dataset) :
 if state_button :
     futur_price, last_price = price_prediction(model,dataset_btc)
 
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
-    with col1:
-        # Plot 1
-        st.markdown("---")
-        st.markdown("")
-        st.markdown("")
-        st.markdown("")
-        st.markdown("")
-        if state_button :
-            st.markdown("### The prediction will be for tomorrow :") 
-            st.markdown("")
-            st.markdown("### {} euros".format(int(futur_price[0])))
-            st.markdown("")
-            st.markdown("")
-            st.markdown("### The last price known is :")
-            st.markdown("")
-            st.markdown("### {} euros".format(round(int(last_price))))
-        st.markdown("")
+with col1:
+    # Plot 1
+    st.markdown("---")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("### The last price known is :")
+    st.markdown("")
+    if state_button :
+        st.markdown("### {} euros".format(round(int(last_price))))
+    st.markdown("")
+    st.markdown("### The prediction will be for tomorrow :") 
+    st.markdown("")
+    if state_button :
+        st.markdown("### {} euros".format(int(futur_price[0])))
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
 
-    with col2:
-        st.markdown("---")
+with col2:
+    st.markdown("---")
+    if state_button :
         futur_price = int(futur_price[0])
         fig1 = go.Figure(go.Indicator(
                     mode = "number+delta",
@@ -91,7 +94,7 @@ if state_button :
                     delta={"reference":int(last_price),"relative":True,"valueformat":".2%"}
                     ))
         st.plotly_chart(fig1, use_container_width=True)
-        st.markdown("")
+    st.markdown("")
 
 # Footer
 empty_space, footer = st.columns([1, 2])

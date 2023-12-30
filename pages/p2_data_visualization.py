@@ -99,6 +99,26 @@ fig4.update_xaxes(
         ])))
 st.plotly_chart(fig4, use_container_width=True)
 
+# Plot 5
+st.markdown("---")
+st.subheader('Plot 5')
+st.markdown("### Visualisation of a technical indicator of your choice over the last 6 months")
+ta_dictionnary = {"Relative strenght index (RSI)" : ["rsi_7","rsi_14","rsi_28"], "Bollinger bands" : ["upper_band20","lower_band20"]}
+ta_name = st.selectbox("Which indicator do you want to see ?", (ta_dictionnary.keys()))                      
+fig5 = px.line(dataset_btc.loc[dataset_btc.index > "2023-10-31",ta_dictionnary[ta_name]], 
+               x=dataset_btc.loc[dataset_btc.index > "2023-10-31",ta_dictionnary[ta_name]].index,
+               y=ta_name, labels={"Close":"Close price in Eur"})
+fig5.update_xaxes(
+    rangeslider_visible=True,
+    rangeselector=dict(
+        buttons=list([
+            dict(count=1, label="1m", step="month", stepmode="backward"),
+            dict(count=2, label="2m", step="month", stepmode="backward"),
+            dict(count=3, label="3m", step="month", stepmode="backward"),
+            dict(step="all")
+        ])))
+st.plotly_chart(fig5, use_container_width=True)
+
 # Footer
 empty_space, footer = st.columns([1, 2])
 

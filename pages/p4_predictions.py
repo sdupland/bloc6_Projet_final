@@ -6,8 +6,10 @@ import plotly.graph_objects as go
 import joblib
 import yfinance as yf
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression, ElasticNet
 from functions import calculate_all_indicators_optimised
-# from xgboost import XGBRegressor
+from xgboost import XGBRegressor
+from sklearn.feature_selection import RFE
 
 # Config
 st.set_page_config(
@@ -17,6 +19,8 @@ st.set_page_config(
 
 # App
 st.title('Bitcoin prediction')
+st.markdown("")
+st.markdown("")
 
 @st.cache_data()
 def load_data():
@@ -30,7 +34,7 @@ dataset_btc = load_data()
 st.sidebar.header("Options")
 st.sidebar.markdown("---")
 st.sidebar.markdown("")
-option_model = st.sidebar.selectbox("Which models do you want to use ?", ("Linear Regression", "Elastic net"), index=None, placeholder="Choose an option") #"XGBoost"
+option_model = st.sidebar.selectbox("Which models do you want to use ?", ("Linear Regression", "Elastic net","XGBoost", "XGBoost_rfe"), index=None, placeholder="Choose an option")
 st.sidebar.markdown("---")
 st.sidebar.markdown("")
 option_horizon = st.sidebar.selectbox("Which time horizon do you want ?", ("tomorrow morning","J+1", "J+2"), index=None, placeholder="Choose an option")
@@ -47,9 +51,12 @@ if option_model =="Linear Regression" :
 elif option_model == "Elastic net" :
     path = "model_elasticnet.joblib"
     model = joblib.load(path)
+elif option_model == "XGBoost":
+    path = "best_model_xgb.joblib"
+    model = joblib.load(path)
 else :
     path = "model_rfe_xgb.joblib"
-    model = joblib.load(path)
+    model = joblib.load(path)  
 
 def price_prediction(model_name, dataset) :
     """
@@ -74,23 +81,37 @@ def price_prediction(model_name, dataset) :
 if state_button :
     futur_price, last_price = price_prediction(model,dataset_btc)
 
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
-    with col1:
-        # Plot 1
-        st.markdown("---")
-        st.markdown("")
-        st.markdown("")
-        if state_button :
-            st.markdown("The prediction will be for tomorrow : {} euros".format(int(futur_price[0])))
-            st.markdown("the last price known is {}".format(round(int(last_price))))
-        st.markdown("")
+with col1:
+    # Plot 1
+    st.markdown("---")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("### The last price known is :")
+    st.markdown("")
+    if state_button :
+        st.markdown("### {} euros".format(round(int(last_price))))
+    else :
+        st.markdown("to be calculated")
+    st.markdown("")
+    st.markdown("### The prediction will be for tomorrow :") 
+    st.markdown("")
+    if state_button :
+        st.markdown("### {} euros".format(int(futur_price[0])))
+    else :
+        st.markdown("to be calculated")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
 
-    with col2:
-        st.markdown("---")
-        st.markdown("")
-        st.markdown("")
-        st.markdown("### Prediction of bitcoin price")
+with col2:
+    # Plot 2
+    st.markdown("---")
+    st.markdown("")
+    if state_button :
         futur_price = int(futur_price[0])
         fig1 = go.Figure(go.Indicator(
                     mode = "number+delta",
@@ -99,7 +120,11 @@ if state_button :
                     delta={"reference":int(last_price),"relative":True,"valueformat":".2%"}
                     ))
         st.plotly_chart(fig1, use_container_width=True)
+    else :
         st.markdown("")
+        st.markdown("")
+        st.markdown("### Please press the launch button to see the trend for tomorrow !")
+    st.markdown("")
 
 # Footer
 empty_space, footer = st.columns([1, 2])

@@ -13,45 +13,46 @@ st.set_page_config(
 
 # App
 st.title('Bitcoin modelisation')
-dataset_btc = st.session_state["dataset_btc"] 
+
 
 @st.cache_data()
 def load_data():
-    path = "btc_completed_optimized.csv"
-    data = pd.read_csv(path, index_col=0)
-    return data
+    data = pd.read_csv("predictions.csv", index_col=0)
+    data1 = pd.read_csv("best_results.csv", index_col=0)
+    return data, data1
 
-dataset_btc = load_data()
+predictions, best_results = load_data()
 
 # Content
 st.sidebar.header("Table of content")
 st.sidebar.markdown("""
-    * [Plot 1](#plot-1) - Evolution of bitcoin price
-    * [Plot 2](#plot-2) - Distribution xxxxxxxxxxxxxxx
-    * [Plot 3](#plot-3) - Distribution xxxxxxxxxxxxxxxxxxxxxx
-    * [Plot 4](#plot-4) - A different xxxxxxxxxxxxxxxxx
+    * [Plot 1](#plot-1) - Performance on test set
+    * [Plot 2](#plot-2) - Comparison of original prices and predictions
 """)
 
-model_lr = joblib.load("model_lr.joblib")
-model_elasticnet = joblib.load("model_elasticnet.joblib")
-model_xgb = joblib.load("model_xgb.joblib")
+st.markdown("")
+st.markdown("#### The dataset used to test our models has {} rows".format(len(predictions)))
+st.markdown("")
+st.markdown("#### It goes from {} to {}".format(predictions.index[-1], predictions.index[0]))
 
 # Plot 1
 st.markdown("---")
 st.subheader('Plot 1')
+st.markdown("### Performance on test set")
+st.write(best_results)
+st.markdown("""
+            Comment : 
+            """)
+
+# Plot 2
+st.markdown("---")
+st.subheader('Plot 2')
 st.markdown("### Comparison between original Close price vs predicted close price")
-fig1 = px.line(dataset_btc, x=dataset_btc.index, y="Close", height=800, labels={"Close":"Close price in Eur"})
-fig1.update_xaxes(
-    rangeslider_visible=True,
-    rangeselector=dict(
-        buttons=list([
-            dict(count=1, label="1m", step="month", stepmode="backward"),
-            dict(count=6, label="6m", step="month", stepmode="backward"),
-            dict(count=1, label="YTD", step="year", stepmode="todate"),
-            dict(count=1, label="1y", step="year", stepmode="backward"),
-            dict(step="all")
-        ])))
-st.plotly_chart(fig1, use_container_width=True)
+fig2 = px.line(predictions, x=predictions.index, y="Original price", height=800, labels={"Original price":"Close price in Eur"})
+fig2.add_scatter(x=predictions.index, y=predictions["Elasticnet with fine tuning"], mode='lines')
+fig2.add_scatter(x=predictions.index, y=predictions["XGBoost with RFE"], mode='lines')
+fig2.add_scatter(x=predictions.index, y=predictions["Linear regression with RFE"], mode='lines')
+st.plotly_chart(fig2, use_container_width=True)
 st.markdown("""
             Comment : 
             """)

@@ -78,7 +78,7 @@ def calculate_all_indicators(dataset) :
     Returns:
         return a dataframe with all the indicators calculated and added per new columns
     """
-    #MOMENTUM
+    #MOMENTUM : 8
     dataset = ta_williams_percent_r(dataset,14)
     dataset = ta_roc(dataset,14)
     dataset = ta_rsi(dataset,7)
@@ -88,7 +88,7 @@ def calculate_all_indicators(dataset) :
     dataset = ta_macd(dataset, 8, 21)
     dataset = ta_bbands(dataset,20)
     
-    #TREND
+    #TREND 33
     dataset = ta_ichimoku_cloud(dataset)
     dataset = ta_ema(dataset, 3)
     dataset = ta_ema(dataset, 8)
@@ -123,14 +123,14 @@ def calculate_all_indicators(dataset) :
     dataset = ta_stdev(dataset, 10)
     dataset = ta_stdev(dataset, 20)
     
-    #VOLATILITY
+    #VOLATILITY  :5
     dataset = ta_vix(dataset, 21)
     dataset = ta_chaikin_volatility(dataset, 10)
     dataset = ta_atr(dataset, 14)
     dataset = ta_chaikin_oscillator(dataset, 3)
     dataset = ta_keltner_channels(dataset, 20)
     
-    # VOLUME
+    # VOLUME : 6
     dataset = ta_obv(dataset, 10)
     dataset = ta_chaikin_money_flow(dataset, 5)
     dataset = ta_volume_price_trend(dataset, 7)
