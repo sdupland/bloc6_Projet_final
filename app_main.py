@@ -13,6 +13,15 @@ st.set_page_config(
 # App
 st.title('Bitcoin analysis and prediction')
 
+@st.cache_data()
+def load_data():
+    path = "btc_completed.csv"
+    data = pd.read_csv(path, index_col=0)
+    return data
+
+dataset_btc = load_data()
+st.session_state["dataset_btc"] = dataset_btc
+
 # Loading Text
 st.markdown("")
 st.markdown("""   
