@@ -28,14 +28,7 @@ st.markdown("""
     For simplification purpose, we made a choice in order to avoid to present it several times
 """)
 
-@st.cache_data()
-def load_data():
-    path = "btc_completed.csv"
-    data = pd.read_csv(path, index_col=0)
-    return data
-
-dataset_btc = load_data()
-st.session_state["dataset_btc"] = dataset_btc
+dataset_btc = st.session_state["dataset_btc"]
 
 # Content
 st.sidebar.header("Table of content")

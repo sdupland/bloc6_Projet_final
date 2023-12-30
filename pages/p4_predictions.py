@@ -21,6 +21,7 @@ st.set_page_config(
 st.title('Bitcoin prediction')
 st.markdown("")
 st.markdown("")
+st.markdown("### Please press the launch button to actualize values and trend for tomorrow !")
 
 @st.cache_data()
 def load_data():
@@ -95,14 +96,14 @@ with col1:
     if state_button :
         st.markdown("### {} euros".format(round(int(last_price))))
     else :
-        st.markdown("to be calculated")
+        st.markdown("to be updated")
     st.markdown("")
     st.markdown("### The prediction will be for tomorrow :") 
     st.markdown("")
     if state_button :
         st.markdown("### {} euros".format(int(futur_price[0])))
     else :
-        st.markdown("to be calculated")
+        st.markdown("to be estimated")
     st.markdown("")
     st.markdown("")
     st.markdown("")
@@ -110,6 +111,7 @@ with col1:
 with col2:
     # Plot 2
     st.markdown("---")
+    st.markdown("")
     st.markdown("")
     if state_button :
         futur_price = int(futur_price[0])
@@ -123,7 +125,9 @@ with col2:
     else :
         st.markdown("")
         st.markdown("")
-        st.markdown("### Please press the launch button to see the trend for tomorrow !")
+        st.markdown("### See the trend for tomorrow")
+        st.markdown("")
+        st.markdown("To be estimated")
     st.markdown("")
 
 # Footer
