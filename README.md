@@ -45,7 +45,7 @@ We worked on optimization of performance by using feature selection (with RFE) a
 
 Models were evaluated on test set.
 
-4) Deploy our work : create a dashboard
+4) Deploy our work : create a dashboard (https://bitcoin-dashboard-03f89f67fc77.herokuapp.com/)
 
 We used streamlit and heroku for technical aspects
 
