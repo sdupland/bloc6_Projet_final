@@ -12,12 +12,12 @@ To do that, we transformed this time series problem in a supervised machine lear
 
 1) Get raw data and create our dataset by feature engineering
 
-Raw data were got via a yahoo finance api (yfinance) over a period of 5 years (daily basis, 5 features collected :open, high, low, close, volume).
+Raw data were gotten via a yahoo finance api (yfinance) over a period of 5 years (daily basis, 5 features collected :open, high, low, close, volume).
 
 We add around :
 - 70 features based on technical indicators (RsI, Bollinger Bands) calculted from raw data,
 - calendar features (month, day etc.)
-- and targets value (close price of the next day for example if we want to make prediction at this horizon of time
+- and targets value (close price of the next day for example if we want to make prediction at this horizon of time)
 
 We made a first feature selection in order to eliminate those who had the lower correlation coefficient.
 
@@ -49,7 +49,7 @@ Models were evaluated on test set.
 
 We used streamlit and heroku for technical aspects
 
-The goal of this dashboard is  multiple.
+The goal of this dashboard is multiple.
 
 First to give some insights on the bitcoin based on historical data. To do that, you will find on some previews on data used in this dashboard, split into different parts :
 - raw data from yfinance (bitcoin prices and volume)
@@ -65,3 +65,24 @@ Fourth to predict the price of the bitcoin regarding different time horizons, an
 At least, we made a synthesis of this work which contains :
 - some limitations and reflections about the job done
 - various ways to improve it
+
+Conclusions :
+
+Performance of our models aren't so bad for a first step with for the best one an error for around 1,3%.
+    The work I did in order to improve performances leads us to reduce this score from 75% which is very significant.
+    
+    Nevertheless, we have detected two main mitigants :
+    
+    - the number of data is limited, and first years could be not really representative of the current period.
+    To adress it, we can try to reduce the frequency from a day to an hour or less in order get data from current period of time.
+    
+    - with supervised machine learning model, the value of an indicator doesn’t tell us anything about is evolution.
+    To adress it, for some indicators, we can try to add features that give informations about their trend.
+
+    In addition, we could also :
+    
+    - add features such as other technical indicators, other financial indicators (price of other crypto, or stock), behavioral indicators (sentimental score for  example from tweet or articles), macro-economics indicators (inflation rate for example)
+    - play with parameters of each technical indicators (often period of times) or with data frequency (hour, minutes)
+    - try others models
+
+
