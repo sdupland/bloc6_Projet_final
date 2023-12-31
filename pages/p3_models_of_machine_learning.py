@@ -45,7 +45,6 @@ with col1:
     st.markdown("")
     st.write(models_comparison)
     st.markdown("""
-            Comment : 
             """)
 
 with col2 :
@@ -63,7 +62,6 @@ with col2 :
     st.markdown("")
     st.markdown("")
     st.markdown("""
-            Comment : 
             """)
     
     

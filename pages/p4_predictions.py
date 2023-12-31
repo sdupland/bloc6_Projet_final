@@ -35,11 +35,12 @@ dataset_btc = load_data()
 st.sidebar.header("Options")
 st.sidebar.markdown("---")
 st.sidebar.markdown("")
-option_model = st.sidebar.selectbox("Which models do you want to use ?", ("Linear Regression", "Elastic net","XGBoost", "XGBoost_rfe"), index=None, placeholder="Choose an option")
+option_model = st.sidebar.selectbox("Which models do you want to use ?", ("Linear Regression", "Elastic net","XGBoost"), index=None, placeholder="Choose an option")
+st.sidebar.markdown("")
 st.sidebar.markdown("---")
 st.sidebar.markdown("")
-option_horizon = st.sidebar.selectbox("Which time horizon do you want ?", ("tomorrow morning","J+1", "J+2"), index=None, placeholder="Choose an option")
-st.sidebar.markdown("---")
+#option_horizon = st.sidebar.selectbox("Which time horizon do you want ?", ("tomorrow morning","J+1", "J+2"), index=None, placeholder="Choose an option")
+#st.sidebar.markdown("---")
 st.sidebar.markdown("")
 state_button = st.sidebar.button("Launch prediction")
 
@@ -51,9 +52,6 @@ if option_model =="Linear Regression" :
     model = joblib.load(path)
 elif option_model == "Elastic net" :
     path = "model_elasticnet.joblib"
-    model = joblib.load(path)
-elif option_model == "XGBoost":
-    path = "best_model_xgb.joblib"
     model = joblib.load(path)
 else :
     path = "model_rfe_xgb.joblib"

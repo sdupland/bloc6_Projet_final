@@ -1,0 +1,6 @@
+,R2_val_score,MAPE_val_score,R2_train_score,MAPE_train_score
+Linear_regression,0.9441,2.04,0.9964,2.8400000000000003
+RFE_Linear_regression,0.9496,1.83,0.9963,2.62
+Elasticnet,0.9451,1.95,0.9961,2.91
+XGBoost,0.9345,2.22,0.9957,3.54
+RFE_XGBoost,0.9429,2.02,0.9958,2.84

@@ -90,7 +90,7 @@ ta_dictionnary = {"Relative strenght index (RSI)" : ["rsi_7","rsi_14","rsi_28"],
                   "Bollinger bands" : ["upper_band20","lower_band20"],
                   "Ichimoku Cloud" : ['Kijun_sen', 'Senkou_Span_A', 'Senkou_Span_B','Chikou_Span'],
                   "Exponential Moving Average (EMA)" :["ema_3","ema_15","ema_50", "ema_100"],
-                  "Kurtosis" : [""]
+                  "Kurtosis" : ["kurtosis_5", "kurtosis_10","kurtosis_20"]
                   }
 ta_name = st.selectbox("Which indicator do you want to see ?", (ta_dictionnary.keys()))
 columns_name = ta_dictionnary[ta_name]                    
