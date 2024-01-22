@@ -2,8 +2,14 @@ mkdir -p ~/.streamlit/
 
 echo "\
 [general]\n\
-email = \"your-email@domain.com\"\n\
+email = \"sdupland@gmail.com"\n\
 " > ~/.streamlit/credentials.toml
+
+echo "\
+[theme]\n\
+base="dark"\n\
+primaryColor="#4be8e0"\n\
+" > ~/.streamlit/config.toml
 
 echo "\
 [server]\n\
