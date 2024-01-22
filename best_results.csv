@@ -1,0 +1,4 @@
+name,R2 score,MAPE
+Linear regression with RFE,0.969,1.33
+XGBoost with RFE,0.962,1.53
+Elasticnet with fine tuning,0.967,1.44
