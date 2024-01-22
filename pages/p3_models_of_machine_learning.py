@@ -68,15 +68,12 @@ with col2 :
 # Plot 3
 st.markdown("---")
 st.subheader('Plot 3')
-st.markdown("### Comparison between original Close price vs predicted close price")
+st.markdown("### Comparison between original Close price vs predicted close price on test set")
 fig1 = px.line(predictions, x=predictions.index, y="Original price", height=800, labels={"Original price":"Close price in Eur"})
-fig1.add_scatter(x=predictions.index, y=predictions["Elasticnet with fine tuning"], mode='lines')
-fig1.add_scatter(x=predictions.index, y=predictions["XGBoost with RFE"], mode='lines')
-fig1.add_scatter(x=predictions.index, y=predictions["Linear regression with RFE"], mode='lines')
+fig1.add_scatter(x=predictions.index, y=predictions["Elasticnet with fine tuning"], mode="lines", line={"dash" :"dot"}, name="Elasticnet with fine tuning")
+fig1.add_scatter(x=predictions.index, y=predictions["XGBoost with RFE"], mode="lines", line={"dash" :"dash"}, name="XGBoost with RFE")
+fig1.add_scatter(x=predictions.index, y=predictions["Linear regression with RFE"], mode="lines", line={"dash" :"dashdot"}, name="Linear regression with RFE")
 st.plotly_chart(fig1, use_container_width=True)
-st.markdown("""
-            Comment : 
-            """)
 
 # Footer
 empty_space, footer = st.columns([1, 2])

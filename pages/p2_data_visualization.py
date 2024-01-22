@@ -33,36 +33,50 @@ st.sidebar.markdown("""
     * [Plot 4 - Evolution of a specific indicator over the period](#plot-4)
 """)
 
-col1, col2 = st.columns(2)
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:    
     # Plot 1
     st.markdown("---")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
     st.subheader('Plot 1')
     st.markdown("### Trend over the last week")
+
+with col2 :
+    st.markdown("---")
     last_price = dataset_btc.iloc[-1,3]
     last_week_price = dataset_btc.iloc[-7,3]
     fig1 = go.Figure(go.Indicator(
-                    mode = "number+delta",
+                    mode = "delta",
                     value = last_price,
-                    number = {"prefix":"€", "valueformat":".2d"},
+                    #number = {"prefix":"€", "valueformat":".2d"},
                     delta={"reference":last_week_price,"relative":True,"valueformat":".2%"}
                     ))
+    fig1.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}, height=200)
     st.plotly_chart(fig1, use_container_width=True)
 
-with col2:    
+with col3:    
     # Plot 2
     st.markdown("---")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("")
     st.subheader('Plot 2')
     st.markdown("### Trend since yesterday")
+
+with col4 :
+    st.markdown("---")
     last_price = dataset_btc.iloc[-1,3]
     yesterday_price = dataset_btc.iloc[-2,3]
     fig2 = go.Figure(go.Indicator(
-                    mode = "number+delta",
+                    mode = "delta",
                     value = last_price,
-                    number = {"prefix":"€", "valueformat":".2d"},
+                    #number = {"prefix":"€", "valueformat":".2d"},
                     delta={"reference":yesterday_price,"relative":True,"valueformat":".2%"}
                     ))
+    fig2.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}, height=200)
     st.plotly_chart(fig2, use_container_width=True)
 
 # Plot 3
@@ -90,7 +104,24 @@ ta_dictionnary = {"Relative strenght index (RSI)" : ["rsi_7","rsi_14","rsi_28"],
                   "Bollinger bands" : ["upper_band20","lower_band20"],
                   "Ichimoku Cloud" : ['Kijun_sen', 'Senkou_Span_A', 'Senkou_Span_B','Chikou_Span'],
                   "Exponential Moving Average (EMA)" :["ema_3","ema_15","ema_50", "ema_100"],
-                  "Kurtosis" : ["kurtosis_5", "kurtosis_10","kurtosis_20"]
+                  "Kurtosis" : ["kurtosis_5", "kurtosis_10","kurtosis_20"],
+                  "Williams %R" : ["Williams_%R14"],
+                  "Exponential moving average (EMA)" : ["ema_3","ema_8","ema_15","ema_50","ema_100"],
+                  "Average Directional indeX (ADX)" : ["ADX_14"],
+                  "Donchian Channel" : ["Donchian_Upper_10", "Donchian_Lower_10", "Donchian_Upper_20", "Donchian_Lower_20"],
+                  "Arnaud Legoux Moving Average (ALMA)" : ["ALMA_10"],
+                  "True Strength Index (TSI)" : ["TSI_13_25"],
+                  "Z Score" : ["Z_score_20"],
+                  "Log return" : ["LogReturn_10","LogReturn_20"],
+                  "Vortex Indicator" : ["Positive_VI_7", "Negative_VI_7"],
+                  "Aroon Indicator" : ["Aroon_Up_16","Aroon_Down_16"],
+                  "Elder's Bull Power and Bear Power" : ["Bull_Power_14", "Bear_Power_14"],
+                  "Acceleration Bands" : ["Upper_Band_20","Lower_Band_20","Middle_Band_20"],
+                  "Short Run" : ["Short_Run_14"],
+                  "Bias" : ["Bias_26"],
+                  "TTM Trend" : ["TTM_Trend_5_20"],
+                  "Percent return" : ["Percent_Return_1", "Percent_Return_5","Percent_Return_10","Percent_Return_20"],
+                  "Standard deviation" : ["Stdev_5","Stdev_10","Stdev_20"]
                   }
 ta_name = st.selectbox("Which indicator do you want to see ?", (ta_dictionnary.keys()))
 columns_name = ta_dictionnary[ta_name]                    

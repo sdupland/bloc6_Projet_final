@@ -39,6 +39,25 @@ st.markdown("""
     - some limitations and reflections about the job done
     - various ways to improve it
 """)
+st.markdown("")
+st.markdown("")
+st.markdown("  !-!-!-!-!-!-!-!-!-!   **DISCLAMER**   !-!-!-!-!-!-!-!-!-!  ")
+st.markdown("""   
+    Informational Purposes Only:  
+    The information and services provided on this platform, including machine learning models predicting Bitcoin prices, are for informational purposes only.
+    They are not intended to constitute personal financial advice.
+    Users should not rely on this information as a substitute for professional financial advice tailored to their individual circumstances.
+
+    Inherent Risk Warning:  
+    Users are reminded that all financial decisions involve inherent risks.
+    The predictions and analyses presented on this dashboard are subject to market fluctuations and uncertainties.
+    There is no guarantee of accuracy or future performance.
+    Users should conduct their own research and seek independent financial advice before making any investment decisions.
+
+    No Liability for Decisions:  
+    The owner of this website and the machine learning models will not be held liable for any decisions made by users based on the information provided.
+    Users acknowledge and agree that they are solely responsible for their financial decisions and any outcomes resulting from them.
+""")
 
 # Footer
 empty_space, footer = st.columns([1, 2])

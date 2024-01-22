@@ -21,7 +21,7 @@ st.set_page_config(
 st.title('Bitcoin prediction')
 st.markdown("")
 st.markdown("")
-st.markdown("### Please press the launch button to actualize values and trend for tomorrow !")
+st.markdown("### Please choose a model on the sidebar and press the launch button to actualize values and trend for tomorrow !")
 
 @st.cache_data()
 def load_data():
@@ -80,52 +80,55 @@ def price_prediction(model_name, dataset) :
 if state_button :
     futur_price, last_price = price_prediction(model,dataset_btc)
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    # Plot 1
-    st.markdown("---")
     st.markdown("")
     st.markdown("")
-    st.markdown("")
-    st.markdown("")
+    st.markdown("")  
     st.markdown("### The last price known is :")
     st.markdown("")
+    st.markdown("")  
     if state_button :
         st.markdown("### {} euros".format(round(int(last_price))))
     else :
-        st.markdown("to be updated")
+        st.markdown("waiting for launching prediction")
     st.markdown("")
+    
+with col2 :
+    st.markdown("")
+    st.markdown("")  
+    st.markdown("")  
     st.markdown("### The prediction will be for tomorrow :") 
     st.markdown("")
+    st.markdown("")  
     if state_button :
         st.markdown("### {} euros".format(int(futur_price[0])))
     else :
-        st.markdown("to be estimated")
+        st.markdown("waiting for launching prediction")
     st.markdown("")
     st.markdown("")
     st.markdown("")
 
-with col2:
-    # Plot 2
-    st.markdown("---")
+with col3:
     st.markdown("")
     st.markdown("")
+    st.markdown("")  
     if state_button :
         futur_price = int(futur_price[0])
         fig1 = go.Figure(go.Indicator(
-                    mode = "number+delta",
+                    mode = "delta",
                     value = futur_price,
                     number = {"prefix":"€", "valueformat":".2d"},
                     delta={"reference":int(last_price),"relative":True,"valueformat":".2%"}
                     ))
+        fig1.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0}, height=150)
         st.plotly_chart(fig1, use_container_width=True)
     else :
-        st.markdown("")
-        st.markdown("")
         st.markdown("### See the trend for tomorrow")
         st.markdown("")
-        st.markdown("To be estimated")
+        st.markdown("")  
+        st.markdown("waiting for launching prediction")
     st.markdown("")
 
 # Footer

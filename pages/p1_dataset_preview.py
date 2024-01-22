@@ -25,7 +25,7 @@ st.markdown("""
         - volume
     
     Sometimes indicators can be adressed in different families.
-    For simplification purpose, we made a choice in order to avoid to present it several times
+    For simplification purpose, we made a choice in order to avoid to present them several times
 """)
 
 dataset_btc = st.session_state["dataset_btc"]
@@ -46,9 +46,6 @@ st.markdown("---")
 st.subheader('Plot 1')
 st.subheader('Overview of bitcoin prices and volume')
 st.write(dataset_btc.iloc[-10:,0:5])
-st.markdown("""
-    comment
-""")
 
 # Plot 2
 st.markdown("---")
