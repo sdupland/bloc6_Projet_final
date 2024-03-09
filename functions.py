@@ -1,12 +1,22 @@
-#import pandas_ta as ta
 import numpy as np
-import datetime
 import pandas as pd
+
+# definitions come from various website as :
+# Binance
+# coinacademy.fr
+# tradingview.com
+# crypto.com
+# zoneboourse.com
+# coinbase.com
+
+# this list is nit exhaustive
 
 
 def calculate_all_indicators_optimised(dataset) :
     """
-    Args:
+    function that allows to program a set of different functions corresponding to each indicators
+    
+    Parameters:
         dataset (dataframe): original dataset composed of columnss High, Low, Open, Close and Volume)
 
     Returns:
@@ -72,7 +82,9 @@ def calculate_all_indicators_optimised(dataset) :
 
 def calculate_all_indicators(dataset) :
     """
-    Args:
+    function that allows to program a set of different functions corresponding to each indicators
+    
+    Parameters:
         dataset (dataframe): original dataset composed of columnss High, Low, Open, Close and Volume)
 
     Returns:
@@ -143,51 +155,57 @@ def calculate_all_indicators(dataset) :
 #---------------------------------------------------------------------------------------------------------------------------
 
 def ta_cci(dataset, window=20, constant=0.015):
-    typical_price = (dataset['High'] + dataset['Low'] + dataset["Close"]) / 3
+    typical_price = (dataset["High"] + dataset["Low"] + dataset["Close"]) / 3
     mean_deviation = abs(typical_price - typical_price.rolling(window=window).mean()).rolling(window=window).mean()
-    dataset['CCI{}'.format(window)] = (typical_price - typical_price.rolling(window=window).mean()) / (constant * mean_deviation)
+    dataset["CCI{}".format(window)] = (typical_price - typical_price.rolling(window=window).mean()) / (constant * mean_deviation)
     return dataset
 
 def ta_williams_percent_r(dataset, window=14):
     """
-    Calculate Williams %R for a given dataset.
+    Calculate Williams %R for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price information.
-    - window (int): The window size for calculating the highest high and lowest low. Default is 14.
+    - dataset (pd.DataFrame): The input dataset containing price information
+    - window (int): The window size for calculating the highest high and lowest low. Default is 14
+    
     Returns:
     - dataset with williams %R values as a new column
     """
     # Calculate the highest high and lowest low over the specified window
-    highest_high = dataset['High'].rolling(window=window).max()
-    lowest_low = dataset['Low'].rolling(window=window).min()
+    highest_high = dataset["High"].rolling(window=window).max()
+    lowest_low = dataset["Low"].rolling(window=window).min()
     # Calculate Williams %R and add it as a new column
-    dataset['Williams_%R{}'.format(window)] = -((highest_high - dataset["Close"]) / (highest_high - lowest_low)) * 100
+    dataset["Williams_%R{}".format(window)] = -((highest_high - dataset["Close"]) / (highest_high - lowest_low)) * 100
     return dataset
 
 def ta_roc(dataset, window=14):
     """
-    Calculate Roc (RSI)
+    Calculate Roc
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Rolling window (default is 14)
+    - window: Rolling window. Default is 14
+    
     Returns:
     - dataset with new column
     """    
     # Calculate Rate of Change
-    dataset['ROC_{}'.format(window)] = (dataset["Close"] / dataset["Close"].shift(window) - 1) * 100
+    dataset["ROC_{}".format(window)] = (dataset["Close"] / dataset["Close"].shift(window) - 1) * 100
     return dataset
 
 def ta_rsi(dataset, window=14) : #14,28
     """
     Calculate Relative Strength Index (RSI) in a DataFrame.
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Rolling window for average gain and loss calculations (default is 14)
+    - window: Rolling window for average gain and loss calculations. Default is 14
+    
     Returns:
     - dataset with new column
     """
     # Calculate daily price changes
-    delta = dataset['Close'].diff(1)
+    delta = dataset["Close"].diff(1)
     # Separate gains and losses
     gains = delta.where(delta>0,0)
     losses = -delta.where(delta<0,0)
@@ -197,18 +215,20 @@ def ta_rsi(dataset, window=14) : #14,28
     # Calculate the relative strength (RS)
     rs = avg_gain / avg_loss
     # Calculate the RSI
-    dataset['rsi_{}'.format(window)] = 100 - (100 / (1 + rs))
+    dataset["rsi_{}".format(window)] = 100 - (100 / (1 + rs))
     return dataset
 
 def ta_stochastic(dataset, k_period=3, d_period=3):
     """
-    Calculate Stochastic Oscillator for a given column in a DataFrame.
+    Calculate Stochastic Oscillator for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - k_period: Stochastic %K period (default is 3)
-    - d_period: Stochastic %D period (default is 3)
+    - k_period: Stochastic %K period. Default is 3
+    - d_period: Stochastic %D period. Default is 3
+    
     Returns:
-    - dataset with additional columns 'Stochastic_K' and 'Stochastic_D'
+    - dataset with additional columns "Stochastic_K" and "Stochastic_D"
     """
     # Calculate %K
     lowest_low = dataset["Close"].rolling(window=k_period).min()
@@ -216,19 +236,21 @@ def ta_stochastic(dataset, k_period=3, d_period=3):
     stochastic_k = 100 * ((dataset["Close"] - lowest_low) / (highest_high - lowest_low))
     # Calculate %D
     stochastic_d = stochastic_k.rolling(window=d_period).mean()
-    # Add 'Stochastic_K' and 'Stochastic_D' columns to the dataset
-    dataset['Stochastic_K{}'.format(k_period)] = stochastic_k
-    dataset['Stochastic_D{}'.format(d_period)] = stochastic_d
+    # Add "Stochastic_K" and "Stochastic_D" columns to the dataset
+    dataset["Stochastic_K{}".format(k_period)] = stochastic_k
+    dataset["Stochastic_D{}".format(d_period)] = stochastic_d
     return dataset
 
 def ta_macd(dataset, short_window=8, long_window=21, signal_window=9):
     """
-    Calculate MACD for a given column in a DataFrame with specified short, long, and signal windows.
+    Calculate MACD for a given column in a DataFrame with specified short, long, and signal windows
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - short_window: Short-term window for the EMA (default is 8)
-    - long_window: Long-term window for the EMA (default is 21)
-    - signal_window: Signal line window for the EMA (default is 9)
+    - short_window: Short-term window for the EMA. Default is 8
+    - long_window: Long-term window for the EMA. Default is 21
+    - signal_window: Signal line window for the EMA. Default is 9
+    
     Returns:
     - dataset with additional columns for MACD, Signal Line, and MACD Histogram
     """
@@ -242,43 +264,47 @@ def ta_macd(dataset, short_window=8, long_window=21, signal_window=9):
     # Calculate MACD Histogram
     macd_histogram = macd_line - signal_line
     # Add new columns to the original DataFrame
-    dataset['MACD_Line'] = macd_line
-    dataset['Signal_Line'] = signal_line
-    dataset['MACD_Histogram'] = macd_histogram
+    dataset["MACD_Line"] = macd_line
+    dataset["Signal_Line"] = signal_line
+    dataset["MACD_Histogram"] = macd_histogram
     return dataset
 
 def ta_bbands(dataset, window=20, num_std_dev=2) :
     """
-    Calculate Bollinger Bands for a given column in a DataFrame.
+    Calculate Bollinger Bands for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Rolling window for moving average calculation (default is 20)
-    - num_std_dev: Number of standard deviations for upper and lower bands (default is 2)
+    - window: Rolling window for moving average calculation. Default is 20
+    - num_std_dev: Number of standard deviations for upper and lower bands. Default is 2
+    
     Returns:
-    - return a dataset with 'Upper Band', 'Middle Band' (MA), and 'Lower Band' columns
+    - return a dataset with "Upper Band", "Middle Band" (MA), and "Lower Band" columns
     """
     # Calculate the rolling mean (Middle Band)
-    dataset['midlle_band'] = dataset['Close'].rolling(window=window).mean()
+    dataset["midlle_band"] = dataset["Close"].rolling(window=window).mean()
     # Calculate the standard deviation
-    dataset['std'] = dataset['Close'].rolling(window=window).std()
+    dataset["std"] = dataset["Close"].rolling(window=window).std()
     # Calculate upper and lower Bollinger Bands
-    dataset['upper_band{}'.format(window)] = dataset['midlle_band'] + (num_std_dev * dataset['std'])
-    dataset['lower_band{}'.format(window)] = dataset['midlle_band'] - (num_std_dev * dataset['std'])
+    dataset["upper_band{}".format(window)] = dataset["midlle_band"] + (num_std_dev * dataset["std"])
+    dataset["lower_band{}".format(window)] = dataset["midlle_band"] - (num_std_dev * dataset["std"])
     # Drop intermediate columns if needed
-    dataset.drop(['std'], axis=1, inplace=True)   
+    dataset.drop(["std"], axis=1, inplace=True)   
     return dataset
 
 #TREND
 
 def ta_ichimoku_cloud(dataset, window_tenkan=9, window_kijun=26, window_senkou_span_b=52, window_chikou=26):
     """
-    Calculate Ichimoku Cloud components for a given dataset.
+    Calculate Ichimoku Cloud components for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price information.
-    - window_tenkan (int): The window size for Tenkan-sen. Default is 9.
-    - window_kijun (int): The window size for Kijun-sen. Default is 26.
-    - window_senkou_span_b (int): The window size for Senkou Span B. Default is 52.
-    - window_chikou (int): The window size for Chikou Span. Default is 26.
+    - dataset (pd.DataFrame): The input dataset containing price information
+    - window_tenkan (int): The window size for Tenkan-sen. Default is 9
+    - window_kijun (int): The window size for Kijun-sen. Default is 26
+    - window_senkou_span_b (int): The window size for Senkou Span B. Default is 52
+    - window_chikou (int): The window size for Chikou Span. Default is 26
+    
     Returns:
     - dataset with Ichimoku Cloud components as new columns.
     """
@@ -293,31 +319,35 @@ def ta_ichimoku_cloud(dataset, window_tenkan=9, window_kijun=26, window_senkou_s
     # Calculate Chikou Span
     chikou_span = dataset["Close"].shift(-window_chikou)
     # Add Ichimoku Cloud components as new columns
-    dataset['Tenkan_sen'] = tenkan_sen
-    dataset['Kijun_sen'] = kijun_sen
-    dataset['Senkou_Span_A'] = senkou_span_a
-    dataset['Senkou_Span_B'] = senkou_span_b
-    dataset['Chikou_Span'] = chikou_span
+    dataset["Tenkan_sen"] = tenkan_sen
+    dataset["Kijun_sen"] = kijun_sen
+    dataset["Senkou_Span_A"] = senkou_span_a
+    dataset["Senkou_Span_B"] = senkou_span_b
+    dataset["Chikou_Span"] = chikou_span
     return dataset
 
 def ta_ema(dataset, window=8) : #8,21,50
     """
-    Calculate Exponential Moving Average (EMA) for a given column in a DataFrame.
+    Calculate Exponential Moving Average (EMA) for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - span: Span for the exponential smoothing with default value at 5
+    - span: Span for the exponential smoothing. Default is 5
+    
     Returns:
     - dataset with new column
     """
-    dataset['ema_{}'.format(window)] = dataset['Close'].ewm(span=window, adjust=False).mean()
+    dataset["ema_{}".format(window)] = dataset["Close"].ewm(span=window, adjust=False).mean()
     return dataset
 
 def ta_sma(dataset, window=10): #50,100
     """
-    Calculate Simple Moving Average (SMA) for a given column in a DataFrame.
+    Calculate Simple Moving Average (SMA) for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Window size for the moving average with default value at 10
+    - window: Window size for the moving average. Default is 10
+    
     Returns:
     - dataset with new column
     """
@@ -325,28 +355,40 @@ def ta_sma(dataset, window=10): #50,100
     return dataset
 
 def ta_adx(dataset, window=14): #14
+    """
+    Calculate adx for a given column in a DataFrame
+    
+    parameters:
+        dataset (_type_): Pandas DataFrame
+        window (int, optional): _description_. Default is 14
+
+    Returns:
+ -      dataset with new column
+    """
     # Calculate True Range
-    dataset['TR'] = abs(dataset['High'] - dataset['Low']).combine_first(abs(dataset['High'] - dataset['Close'].shift(1))).combine_first(abs(dataset['Low'] - dataset['Close'].shift(1)))
+    dataset["TR"] = abs(dataset["High"] - dataset["Low"]).combine_first(abs(dataset["High"] - dataset["Close"].shift(1))).combine_first(abs(dataset["Low"] - dataset["Close"].shift(1)))
     # Calculate Directional Movement
-    dataset['DMplus'] = (dataset['High'] - dataset['High'].shift(1)).apply(lambda x: x if x > 0 else 0)
-    dataset['DMminus'] = (dataset['Low'].shift(1) - dataset['Low']).apply(lambda x: x if x > 0 else 0)
+    dataset["DMplus"] = (dataset["High"] - dataset["High"].shift(1)).apply(lambda x: x if x > 0 else 0)
+    dataset["DMminus"] = (dataset["Low"].shift(1) - dataset["Low"]).apply(lambda x: x if x > 0 else 0)
     # Calculate Smoothed ATR and Directional Indicators
-    dataset['ATR'] = dataset['TR'].rolling(window=window).mean()
-    dataset['DIplus'] = (dataset['DMplus'].rolling(window=window).mean() / dataset['ATR']) * 100
-    dataset['DIminus'] = (dataset['DMminus'].rolling(window=window).mean() / dataset['ATR']) * 100
+    dataset["ATR"] = dataset["TR"].rolling(window=window).mean()
+    dataset["DIplus"] = (dataset["DMplus"].rolling(window=window).mean() / dataset["ATR"]) * 100
+    dataset["DIminus"] = (dataset["DMminus"].rolling(window=window).mean() / dataset["ATR"]) * 100
     # Calculate ADX
-    dataset['DX'] = abs(dataset['DIplus'] - dataset['DIminus']) / (dataset['DIplus'] + dataset['DIminus']) * 100
-    dataset['ADX_{}'.format(window)] = dataset['DX'].rolling(window=window).mean()
+    dataset["DX"] = abs(dataset["DIplus"] - dataset["DIminus"]) / (dataset["DIplus"] + dataset["DIminus"]) * 100
+    dataset["ADX_{}".format(window)] = dataset["DX"].rolling(window=window).mean()
     # Drop intermediate columns if needed
-    dataset.drop(['TR', 'DMplus', 'DMminus', 'ATR', 'DIplus', 'DIminus', 'DX'], axis=1, inplace=True)
+    dataset.drop(["TR", "DMplus", "DMminus", "ATR", "DIplus", "DIminus", "DX"], axis=1, inplace=True)
     return dataset
 
 def ta_donchian(dataset, window=10):
     """
-    Calculate Donchian Channel for a given column in a DataFrame with a specified window size.
+    Calculate Donchian Channel for a given column in a DataFrame with a specified window size
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window_size: Size of the rolling window (default is 10)
+    - window_size: Size of the rolling window. Default is 10
+    
     Returns:
     - dataset with two additional columns for Donchian Channel Upper and Lower bands
     """
@@ -354,61 +396,67 @@ def ta_donchian(dataset, window=10):
     highest_high = dataset["Close"].rolling(window=window).max()
     lowest_low = dataset["Close"].rolling(window=window).min()
     # Add new columns to the original DataFrame
-    dataset['Donchian_Upper_{}'.format(window)] = highest_high
-    dataset['Donchian_Lower_{}'.format(window)] = lowest_low
+    dataset["Donchian_Upper_{}".format(window)] = highest_high
+    dataset["Donchian_Lower_{}".format(window)] = lowest_low
     return dataset
 
 def ta_eri(dataset, window=13):
     """
-    Calculate Elder's Force Index (ERI) for a given column in a DataFrame.
+    Calculate Elder's Force Index (ERI) for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - period: Number of periods for calculating the change in force (default is 13)
+    - period: Number of periods for calculating the change in force. Default is 13
+    
     Returns:
-    - dataset with an additional column 'ERI'
+    - dataset with an additional column "ERI"
     """
     # Calculate price change
     price_change = dataset["Close"].diff()
     # Calculate Force Index
-    force_index = price_change * dataset['Volume']
+    force_index = price_change * dataset["Volume"]
     # Calculate ERI
     eri = force_index.ewm(span=window, adjust=False).mean()
-    # Add 'ERI' column to the dataset
-    dataset['ERI_{}'.format(window)] = eri
+    # Add "ERI" column to the dataset
+    dataset["ERI_{}".format(window)] = eri
     return dataset
 
 def ta_alma(dataset, window=10, sigma=6, offset=0.85):
     """
-    Calculate Arnaud Legoux Moving Average (ALMA) for a given column in a DataFrame.
+    Calculate Arnaud Legoux Moving Average (ALMA) for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Window size for the moving average (default is 10)
-    - sigma: Standard deviation factor (default is 6)
-    - offset: Offset factor (default is 0.85)
+    - window: Window size for the moving average. Default is 10
+    - sigma: Standard deviation factor. Default is 6
+    - offset: Offset factor. Default is 0.85
+    
     Returns:
-    - dataset with an additional column 'ALMA'
+    - dataset with an additional column "ALMA"
     """
     # Calculate the weighting function
     m = np.linspace(-offset*(window-1), offset*(window-1), window)
     w = np.exp(-0.5 * (m / sigma) ** 2)
     w /= w.sum()
     # Calculate ALMA
-    alma_values = np.convolve(dataset["Close"].values, w, mode='valid')
+    alma_values = np.convolve(dataset["Close"].values, w, mode="valid")
     # Add NaN values to match the length of the original dataset
     alma_values = np.concatenate([np.full(window-1, np.nan), alma_values])
-    # Add 'ALMA' column to the dataset
-    dataset['ALMA_{}'.format(window)] = alma_values
+    # Add "ALMA" column to the dataset
+    dataset["ALMA_{}".format(window)] = alma_values
     return dataset
 
 def ta_tsi(dataset, short_period=13, long_period=25):
     """
-    Calculate True Strength Index (TSI) for a given column in a DataFrame.
+    Calculate True Strength Index (TSI) for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - short_period: Short EMA period (default is 13)
-    - long_period: Long EMA period (default is 25)
+    - short_period: Short EMA period. Default is 13
+    - long_period: Long EMA period. Default is 25
+    
     Returns:
-    - Dataset with an additional column 'TSI'
+    - Dataset with an additional column "TSI"
     """
     # Calculate price difference
     price_diff = dataset["Close"].diff(1)
@@ -418,49 +466,55 @@ def ta_tsi(dataset, short_period=13, long_period=25):
     double_smoothed_abs = price_diff.abs().ewm(span=short_period, min_periods=1, adjust=False).mean().ewm(span=long_period, min_periods=1, adjust=False).mean()
     # Calculate TSI
     tsi_values = 100 * double_smoothed / double_smoothed_abs
-    # Add 'TSI' column to the dataset
-    dataset['TSI_{}_{}'.format(short_period, long_period)] = tsi_values
+    # Add "TSI" column to the dataset
+    dataset["TSI_{}_{}".format(short_period, long_period)] = tsi_values
     return dataset
 
 def ta_zscore(dataset, window=20):
     """
-    Calculate Z-Score for a given column in a DataFrame.
+    Calculate Z-Score for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window_size: Rolling window size for calculating mean and standard deviation (default is 20)
+    - window_size: Rolling window size for calculating mean and standard deviation. Default is 20
+    
     Returns:
-    - Dataset with an additional column 'Z_Score'
+    - Dataset with an additional column "Z_Score"
     """
     # Calculate mean and standard deviation
     rolling_mean = dataset["Close"].rolling(window=window).mean()
     rolling_std = dataset["Close"].rolling(window=window).std()
     # Calculate Z-Score
     z_score = (dataset["Close"] - rolling_mean) / rolling_std
-    # Add 'Z_Score' column to the dataset
-    dataset['Z_Score_{}'.format(window)] = z_score
+    # Add "Z_Score" column to the dataset
+    dataset["Z_Score_{}".format(window)] = z_score
     return dataset
 
 def ta_log_return(dataset, window=5):
     """
-    Calculate the log return for a given column in a DataFrame.
+    Calculate the log return for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Window size for calculating the log return (default is 1)
+    - window: Window size for calculating the log return. Default is 1
+    
     Returns:
-    - dataset with an additional column 'LogReturn'
+    - dataset with an additional column "LogReturn"
     """
     # Calculate log return
-    dataset['LogReturn_{}'.format(window)] = dataset["Close"].pct_change(window).apply(lambda x: 0 if pd.isna(x) else x)
+    dataset["LogReturn_{}".format(window)] = dataset["Close"].pct_change(window).apply(lambda x: 0 if pd.isna(x) else x)
     return dataset
 
 def ta_kurtosis(dataset, window=20):
     """
-    Calculate kurtosis for a given column in a DataFrame with a specified window size.
+    Calculate kurtosis for a given column in a DataFrame with a specified window size
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window_size: Size of the rolling window (default is 20)
+    - window_size: Size of the rolling window. Default is 20
+    
     Returns:
-    - dataset with an additional column 'kurtosis'
+    - dataset with an additional column "kurtosis"
     """
     # Calculate kurtosis using a rolling window and create a new column
     dataset["kurtosis_{}".format(window)] = dataset["Close"].rolling(window=window).apply(lambda x: np.nan if x.isnull().any() else x.kurt())
@@ -468,22 +522,24 @@ def ta_kurtosis(dataset, window=20):
 
 def ta_vortex(dataset, window=7): #14?
     """
-    Calculate Vortex Indicator for a given column in a DataFrame with a specified window size.
+    Calculate Vortex Indicator for a given column in a DataFrame with a specified window size
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window_size: Size of the rolling window (default is 14)
+    - window_size: Size of the rolling window. Default is 14
+    
     Returns:
     - dataset with two additional columns for Positive Vortex Movement (VM+) and Negative Vortex Movement (VM-)
     """
     # Calculate True Range (TR)
-    high_low = dataset['High'] - dataset['Low']
-    high_close_previous = abs(dataset['High'] - dataset['Close'].shift(1))
-    low_close_previous = abs(dataset['Low'] - dataset['Close'].shift(1))
+    high_low = dataset["High"] - dataset["Low"]
+    high_close_previous = abs(dataset["High"] - dataset["Close"].shift(1))
+    low_close_previous = abs(dataset["Low"] - dataset["Close"].shift(1))
     true_range = pd.concat([high_low, high_close_previous, low_close_previous], axis=1).max(axis=1)
     # Calculate Positive Vortex Movement (VM+)
-    positive_vm = abs(dataset['High'].shift(1) - dataset['Low'])
+    positive_vm = abs(dataset["High"].shift(1) - dataset["Low"])
     # Calculate Negative Vortex Movement (VM-)
-    negative_vm = abs(dataset['Low'].shift(1) - dataset['High'])
+    negative_vm = abs(dataset["Low"].shift(1) - dataset["High"])
     # Calculate rolling sum for TR, VM+, and VM-
     true_range_sum = true_range.rolling(window=window).sum()
     positive_vm_sum = positive_vm.rolling(window=window).sum()
@@ -492,21 +548,23 @@ def ta_vortex(dataset, window=7): #14?
     positive_vi = positive_vm_sum / true_range_sum
     negative_vi = negative_vm_sum / true_range_sum
     # Add new columns to the original DataFrame
-    dataset['Positive_VI_{}'.format(window)] = positive_vi
-    dataset['Negative_VI_{}'.format(window)] = negative_vi
+    dataset["Positive_VI_{}".format(window)] = positive_vi
+    dataset["Negative_VI_{}".format(window)] = negative_vi
     return dataset
 
 def ta_aroon(dataset, window=16):
     """
-    Calculate Aroon Indicator in a DataFrame with a specified window size.
+    Calculate Aroon Indicator in a DataFrame with a specified window size
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window_size: Size of the rolling window (default is 16)
+    - window_size: Size of the rolling window. Default is 16
+    
     Returns:
     - dataset with two additional columns for Aroon Up and Aroon Down
     """
-    high_prices = dataset['High']
-    low_prices = dataset['Low']
+    high_prices = dataset["High"]
+    low_prices = dataset["Low"]
     aroon_up = []
     aroon_down = []
     for i in range(window, len(high_prices)):
@@ -517,42 +575,46 @@ def ta_aroon(dataset, window=16):
         aroon_up.append((window - high_index) / window * 100)
         aroon_down.append((window - low_index) / window * 100)
 
-    # Pad with NaN values for the first 'period' rows
+    # Pad with NaN values for the first "period" rows
     aroon_up = [None] * window + aroon_up
     aroon_down = [None] * window + aroon_down
 
     # Add new columns to the original DataFrame
-    dataset['Aroon_Up_{}'.format(window)] = aroon_up
-    dataset['Aroon_Down_{}'.format(window)] = aroon_down
+    dataset["Aroon_Up_{}".format(window)] = aroon_up
+    dataset["Aroon_Down_{}".format(window)] = aroon_down
     return dataset
 
 def ta_ebsw(dataset, window=14):
     """
-    Calculate Elder's Bull Power and Bear Power for a given column in a DataFrame.
+    Calculate Elder"s Bull Power and Bear Power for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - ema_window: Window for the Exponential Moving Average (default is 14)
+    - ema_window: Window for the Exponential Moving Average. Default is 14
+    
     Returns:
     - dataset with additional columns for Bull Power and Bear Power
     """
     # Calculate Exponential Moving Average
     ema = dataset["Close"].ewm(span=window, adjust=False).mean()
     # Calculate Bull Power
-    bull_power = dataset['High'] - ema
+    bull_power = dataset["High"] - ema
     # Calculate Bear Power
-    bear_power = dataset['Low'] - ema
+    bear_power = dataset["Low"] - ema
     # Add new columns to the original DataFrame
-    dataset['Bull_Power_{}'.format(window)] = bull_power
-    dataset['Bear_Power_{}'.format(window)] = bear_power
+    dataset["Bull_Power_{}".format(window)] = bull_power
+    dataset["Bear_Power_{}".format(window)] = bear_power
     return dataset
 
 def ta_accbands(dataset, window=20, acceleration_factor=0.02):
     """
-    Calculate Acceleration Bands for a given column in a DataFrame.
+    Calculate Acceleration Bands for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - sma_window: Window for the Simple Moving Average (default is 20)
-    - acceleration_factor: Acceleration factor for the bands (default is 0.02)
+    - sma_window: Window for the Simple Moving Average. Default is 20
+    - acceleration_factor: Acceleration factor for the bands. Dfault is 0.02
+    
     Returns:
     - dataset with additional columns for Upper Band, Lower Band, and Middle Band (SMA)
     """
@@ -564,32 +626,36 @@ def ta_accbands(dataset, window=20, acceleration_factor=0.02):
     upper_band = sma + band_difference
     lower_band = sma - band_difference
     # Add new columns to the original DataFrame
-    dataset['Upper_Band_{}'.format(window)] = upper_band
-    dataset['Lower_Band_{}'.format(window)] = lower_band
-    dataset['Middle_Band_{}'.format(window)] = sma
+    dataset["Upper_Band_{}".format(window)] = upper_band
+    dataset["Lower_Band_{}".format(window)] = lower_band
+    dataset["Middle_Band_{}".format(window)] = sma
     return dataset
 
 def ta_short_run(dataset, window=14):
     """
-    Calculate Short Run for a given column in a DataFrame.
+    Calculate Short Run for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Window for finding the lowest closing price (default is 14)
+    - window: Window for finding the lowest closing price. Default is 14
+    
     Returns:
     - Original DataFrame with an additional column for Short Run
     """
     # Calculate Short Run as the difference between the current closing price and the lowest closing price
     short_run = dataset["Close"] - dataset["Close"].rolling(window=window).min()
     # Add the new column to the original DataFrame
-    dataset['Short_Run_{}'.format(window)] = short_run
+    dataset["Short_Run_{}".format(window)] = short_run
     return dataset
 
 def ta_bias(dataset, window=26):
     """
-    Calculate Bias for a given column in a DataFrame.
+    Calculate Bias for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - moving_average_window: Window for the moving average (default is 26)
+    - moving_average_window: Window for the moving average. Default is 26
+    
     Returns:
     - Original DataFrame with an additional column for Bias
     """
@@ -598,16 +664,18 @@ def ta_bias(dataset, window=26):
     # Calculate Bias as the percentage difference
     bias = ((dataset["Close"] - moving_average) / moving_average) * 100
     # Add the new column to the original DataFrame
-    dataset['Bias_{}'.format(window)] = bias
+    dataset["Bias_{}".format(window)] = bias
     return dataset
 
 def ta_ttm_trend(dataset, short_window=5, long_window=20):
     """
-    Calculate TTM Trend for a given column in a DataFrame.
+    Calculate TTM Trend for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - short_window: Window for the short-term EMA (default is 5)
-    - long_window: Window for the long-term EMA (default is 20)
+    - short_window: Window for the short-term EMA. Default is 5
+    - long_window: Window for the long-term EMA. Default is 20
+    
     Returns:
     - dataset with an additional column for TTM Trend
     """
@@ -617,68 +685,76 @@ def ta_ttm_trend(dataset, short_window=5, long_window=20):
     # Calculate TTM Trend as the difference between short-term and long-term EMAs
     ttm_trend = short_ema - long_ema
     # Add the new column to the original DataFrame
-    dataset['TTM_Trend_{}_{}'.format(short_window, long_window)] = ttm_trend
+    dataset["TTM_Trend_{}_{}".format(short_window, long_window)] = ttm_trend
     return dataset
 
 def ta_percent_return(dataset, window=1): #5/10/20
     """
-    Calculate percent return for a given column in a DataFrame.
+    Calculate percent return for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Size of the rolling window (default is 1)
+    - window: Size of the rolling window. Default is 1
+    
     Returns:
     - dataset with an additional column for percent return
     """
     # Calculate percent return as the percentage change
     percent_return = dataset["Close"].pct_change().rolling(window=window).mean() * 100
     # Add the new column to the original DataFrame
-    dataset['Percent_Return_{}'.format(window)] = percent_return
+    dataset["Percent_Return_{}".format(window)] = percent_return
     return dataset
 
 def ta_stdev(dataset, window=1): #5/10/20
     """
-    Calculate standard deviation with a specified rolling window for a given column in a DataFrame.
+    Calculate standard deviation with a specified rolling window for a given column in a DataFrame
+    
     Parameters:
     - dataset: Pandas DataFrame
-    - window: Size of the rolling window (default is 1)
+    - window: Size of the rolling window. Default is 1
+    
     Returns:
     - dataset with an additional column for standard deviation
     """
     # Calculate standard deviation with a rolling window
     stdev_column = dataset["Close"].rolling(window=window).std()
     # Add the new column to the original DataFrame
-    dataset['Stdev_{}'.format(window)] = stdev_column
+    dataset["Stdev_{}".format(window)] = stdev_column
     return dataset
 
 # VOLATILITY
 
 def ta_keltner_channels(dataset, period=20, multiplier=2):
     """
-    Calculate Keltner Channels.
+    Calculate Keltner Channels
+    
     Parameters:
-    - dataset: DataFrame with columns 'Date', 'High', 'Low', 'Close'
-    - period: Window size for calculating moving averages (default: 20)
-    - multiplier: Multiplier for ATR to set upper and lower bands (default: 2)
+    - dataset: DataFrame with columns "Date", "High", "Low", "Close"
+    - period: Window size for calculating moving averages. Default: 20
+    - multiplier: Multiplier for ATR to set upper and lower bands. Default: 2
+    
     Returns:
-    - Modified dataset with new columns: 'Middle Band', 'Upper Band', 'Lower Band'
+    - Modified dataset with new columns: "Middle Band", "Upper Band", "Lower Band"
     """
     # Calculate ATR
-    dataset['TR'] = dataset.apply(lambda row: max(row['High'] - row['Low'], abs(row['High'] - row['Close']), abs(row['Low'] - row['Close'])), axis=1)
-    dataset['ATR'] = dataset['TR'].rolling(window=period).mean()
+    dataset["TR"] = dataset.apply(lambda row: max(row["High"] - row["Low"], abs(row["High"] - row["Close"]), abs(row["Low"] - row["Close"])), axis=1)
+    dataset["ATR"] = dataset["TR"].rolling(window=period).mean()
     # Calculate Keltner Channels
-    dataset['Middle Band'] = dataset['Close'].rolling(window=period).mean()
-    dataset['Upper Band'] = dataset['Middle Band'] + multiplier * dataset['ATR']
-    dataset['Lower Band'] = dataset['Middle Band'] - multiplier * dataset['ATR']
+    dataset["Middle Band"] = dataset["Close"].rolling(window=period).mean()
+    dataset["Upper Band"] = dataset["Middle Band"] + multiplier * dataset["ATR"]
+    dataset["Lower Band"] = dataset["Middle Band"] - multiplier * dataset["ATR"]
     return dataset
 
 def ta_vix(dataset, window=21):
     """
-    Calculate a basic form of the Volatility Index (VIX) for a given dataset.
+    Calculate a basic form of the Volatility Index (VIX) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price information.
-    - window (int): The window size for volatility calculation. Default is 21.
+    - dataset (pd.DataFrame): The input dataset containing price information
+    - window (int): The window size for volatility calculation. Default is 21
+    
     Returns:
-    - dataset with a new 'VIX' column representing volatility.
+    - dataset with a new "VIX" column representing volatility
     """
     # Calculate daily returns
     returns = dataset["Close"].pct_change().dropna()
@@ -687,47 +763,61 @@ def ta_vix(dataset, window=21):
     # Calculate the VIX as a simple measure of volatility
     vix = rolling_std * np.sqrt(252) * 100  # Adjust for annualization
     # Add VIX as a new column to the original dataset
-    dataset['VIX_{}'.format(window)] = vix
+    dataset["VIX_{}".format(window)] = vix
     return dataset
 
 def ta_chaikin_volatility(dataset, window=10):
     """
-    Calculate Chaikin Volatility for a given dataset.
+    Calculate Chaikin Volatility for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price information.
-    - close_column (str): The column name for closing prices. Default is 'Close'.
-    - window (int): The window size for calculating Chaikin Volatility. Default is 10.
+    - dataset (pd.DataFrame): The input dataset containing price information
+    - close_column (str): The column name for closing prices. Default is "Close"
+    - window (int): The window size for calculating Chaikin Volatility. Default is 10
+    
     Returns:
-    - pd.Series: Chaikin Volatility values as a new column in the original dataset.
+    - dataset with a new column "Chaikin Volatility"
     """
     # Calculate daily percentage change
     daily_returns = dataset["Close"].pct_change()
     # Calculate Chaikin Volatility
     chaikin_volatility = daily_returns.rolling(window=window).std() * (252 ** 0.5)
     # Add Chaikin Volatility as a new column
-    dataset['Chaikin_Volatility_{}'.format(window)] = chaikin_volatility
+    dataset["Chaikin_Volatility_{}".format(window)] = chaikin_volatility
     return dataset
 
 def ta_atr(dataset, window=14):
+    """
+    Calculate ATR for a given dataset
+
+    Parameters:
+    - dataset (pd.DataFrame): The input dataset containing price information
+    - window (int): The window size for calculating ATR. Default is 14
+
+    Returns:
+    - dataset with 4 new columns
+    """
     # Calculate True Range
-    dataset['High-Low'] = dataset['High'] - dataset['Low']
-    dataset['High-PrevClose'] = abs(dataset['High'] - dataset['Close'].shift(1))
-    dataset['Low-PrevClose'] = abs(dataset['Low'] - dataset['Close'].shift(1))
-    dataset['TrueRange'] = dataset[['High-Low', 'High-PrevClose', 'Low-PrevClose']].max(axis=1)
+    dataset["High-Low"] = dataset["High"] - dataset["Low"]
+    dataset["High-PrevClose"] = abs(dataset["High"] - dataset["Close"].shift(1))
+    dataset["Low-PrevClose"] = abs(dataset["Low"] - dataset["Close"].shift(1))
+    dataset["TrueRange"] = dataset[["High-Low", "High-PrevClose", "Low-PrevClose"]].max(axis=1)
     # Calculate ATR using the Exponential Moving Average (EMA)
-    dataset["atr_{}".format(window)] = dataset['TrueRange'].rolling(window=window, min_periods=1).mean()
+    dataset["atr_{}".format(window)] = dataset["TrueRange"].rolling(window=window, min_periods=1).mean()
     # Drop intermediate columns
-    dataset.drop(['High-Low', 'High-PrevClose', 'Low-PrevClose', 'TrueRange'], axis=1, inplace=True)
+    dataset.drop(["High-Low", "High-PrevClose", "Low-PrevClose", "TrueRange"], axis=1, inplace=True)
     return dataset
 
 def ta_chaikin_oscillator(dataset, window=3):
     """
-    Calculate Chaikin Oscillator for a given dataset.
+    Calculate Chaikin Oscillator for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - window (int): The window size for calculating the Chaikin Oscillator. Default is 3.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for calculating the Chaikin Oscillator. Default is 3
+    
     Returns:
-    - dataset with Chaikin Oscillator values as a new column in the original dataset.
+    - dataset with Chaikin Oscillator values as a new column in the original dataset
     """
     # Calculate Money Flow Multiplier
     mf_multiplier = ((dataset["Close"] - dataset["Low"]) - (dataset["High"] - dataset["Close"])) / (dataset["High"] - dataset["Low"])
@@ -738,19 +828,21 @@ def ta_chaikin_oscillator(dataset, window=3):
     # Calculate Chaikin Oscillator
     chaikin_oscillator = adl - adl.rolling(window=window).mean()
     # Add Chaikin Oscillator as a new column
-    dataset['Chaikin_Oscillator_{}'.format(window)] = chaikin_oscillator
+    dataset["Chaikin_Oscillator_{}".format(window)] = chaikin_oscillator
     return dataset
 
 # VOLUME
 
 def ta_obv(dataset, window=10):
     """
-    Calculate On-Balance Volume (OBV) for a given dataset.
+    Calculate On-Balance Volume (OBV) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - window (int): The window size for calculating OBV. Default is 10.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for calculating OBV. Default is 10
+    
     Returns:
-    - pd.Series: On-Balance Volume (OBV) values as a new column in the original dataset.
+    - dataset with OBV values as a new column
     """
     # Calculate daily price changes
     price_changes = dataset["Close"].diff()
@@ -762,17 +854,19 @@ def ta_obv(dataset, window=10):
     # Smooth OBV using a rolling window
     obv_smoothed = obv.rolling(window=window).mean()
     # Add OBV as a new column
-    dataset['OBV_{}'.format(window)] = obv_smoothed
+    dataset["OBV_{}".format(window)] = obv_smoothed
     return dataset
 
 def ta_chaikin_money_flow(dataset, window=10):
     """
-    Calculate Chaikin Money Flow (CMF) for a given dataset.
+    Calculate Chaikin Money Flow (CMF) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - window (int): The window size for calculating CMF. Default is 10.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for calculating CMF. Default is 10
+    
     Returns:
-    - dataset with Chaikin Money Flow (CMF) values as a new column.
+    - dataset with Chaikin Money Flow (CMF) values as a new column
     """
     # Calculate Money Flow Multiplier
     mf_multiplier = ((dataset["Close"] - dataset["Close"].shift(1)) 
@@ -784,36 +878,38 @@ def ta_chaikin_money_flow(dataset, window=10):
     # Calculate Chaikin Money Flow (CMF)
     cmf = adl.rolling(window=window).mean() / dataset["Volume"].rolling(window=window).mean()
     # Add CMF as a new column
-    dataset['CMF_{}'.format(window)] = cmf
+    dataset["CMF_{}".format(window)] = cmf
     return dataset
 
 def ta_volume_price_trend(dataset, window=10):
     """
-    Calculate Volume Price Trend (VPT) for a given dataset.
+    Calculate Volume Price Trend (VPT) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - close_column (str): The column name for closing prices. Default is 'Close'.
-    - volume_column (str): The column name for volume information. Default is 'Volume'.
-    - window (int): The window size for calculating VPT. Default is 10.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for calculating VPT. Default is 10
+    
     Returns:
-    - pd.Series: Volume Price Trend (VPT) values as a new column in the original dataset.
+    - dataset with Volume Price Trend (VPT) values as a new column
     """
     # Calculate percentage price change
     price_change = dataset["Close"].pct_change()
     # Calculate Volume Price Trend (VPT)
     vpt = (price_change * dataset["Volume"].shift(window)).cumsum()
     # Add VPT as a new column
-    dataset['VPT_{}'.format(window)] = vpt
+    dataset["VPT_{}".format(window)] = vpt
     return dataset
 
 def ta_accumulation_distribution_line(dataset, window=10):
     """
-    Calculate Accumulation/Distribution Line (A/D Line) for a given dataset.
+    Calculate Accumulation/Distribution Line (A/D Line) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - window (int): The window size for smoothing the A/D Line. Default is 10.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for smoothing the A/D Line. Default is 10
+    
     Returns:
-    - dataset with Accumulation/Distribution Line (A/D Line) values as a new column.
+    - dataset with Accumulation/Distribution Line (A/D Line) values as a new column
     """
     # Calculate Money Flow Multiplier
     money_flow_multiplier = ((dataset["Close"] - dataset["Close"].shift(1)) - (dataset["Close"].shift(1) - dataset["Close"])) / (dataset["Close"].shift(1) - dataset["Close"])
@@ -824,20 +920,22 @@ def ta_accumulation_distribution_line(dataset, window=10):
     # Smooth the A/D Line using a moving average
     ad_line_smoothed = ad_line.rolling(window=window, min_periods=1).mean()
     # Add A/D Line as a new column
-    dataset['A/D Line_{}'.format(window)] = ad_line_smoothed
+    dataset["A/D Line_{}".format(window)] = ad_line_smoothed
     return dataset
 
 def ta_money_flow_index(dataset, window=14):
     """
-    Calculate Money Flow Index (MFI) for a given dataset.
+    Calculate Money Flow Index (MFI) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - window (int): The window size for calculating MFI. Default is 14.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for calculating MFI. Default is 14
+    
     Returns:
-    - dataset with Money Flow Index (MFI) values as a new column.
+    - dataset with Money Flow Index (MFI) values as a new column
     """
     # Calculate typical price
-    typical_price = (dataset['High'] + dataset['Low'] + dataset["Close"]) / 3
+    typical_price = (dataset["High"] + dataset["Low"] + dataset["Close"]) / 3
     # Calculate raw money flow
     raw_money_flow = typical_price * dataset["Volume"]
     # Calculate money flow ratio
@@ -851,17 +949,19 @@ def ta_money_flow_index(dataset, window=14):
     # Calculate Money Flow Index (MFI)
     mfi = 100 - (100 / (1 + average_positive_money_flow / average_negative_money_flow))
     # Add MFI as a new column
-    dataset['MFI_{}'.format(window)] = mfi
+    dataset["MFI_{}".format(window)] = mfi
     return dataset
 
 def ta_ease_of_movement(dataset, window=14):
     """
-    Calculate Ease of Movement (EOM) for a given dataset.
+    Calculate Ease of Movement (EOM) for a given dataset
+    
     Parameters:
-    - dataset (pd.DataFrame): The input dataset containing price and volume information.
-    - window (int): The window size for calculating EOM. Default is 14.
+    - dataset (pd.DataFrame): The input dataset containing price and volume information
+    - window (int): The window size for calculating EOM. Default is 14
+    
     Returns:
-    - dataset with Ease of Movement (EOM) values as a new column.
+    - dataset with Ease of Movement (EOM) values as a new column
     """
     # Calculate Midpoint Move
     midpoint_move = ((dataset["High"] + dataset["Low"]) / 2).diff(1)
@@ -872,7 +972,7 @@ def ta_ease_of_movement(dataset, window=14):
     # Smooth EOM using a window
     eom_smoothed = eom.rolling(window=window, min_periods=1).mean()
     # Add EOM as a new column
-    dataset['EOM_{}'.format(window)] = eom_smoothed
+    dataset["EOM_{}".format(window)] = eom_smoothed
     return dataset
 
 
@@ -1097,12 +1197,14 @@ Volume indicators are essential for analyzing trading activity and market sentim
 #--------------------------------------------------------------------------------------------------------------
 
 def calendar_features(dataset) :
-    """_summary_
-    Create new features from date (index)
-    Args:
+    """
+    Create new calendar features from date (index)
+    
+    Parameters:
         dataset (dataframe): original dataset
+        
     Returns:
-        dataset: dataset with new columns containing target prices.
+        dataset: dataset with new columns containing target prices
     """
     dataset["month"] = pd.DatetimeIndex(dataset.index).month
     dataset["day"] = pd.DatetimeIndex(dataset.index).day
@@ -1114,11 +1216,13 @@ def calendar_features(dataset) :
 def create_targets(dataset, horizon=3) :
     """
     Create targets data (price to predict) from close price and horizon of time
-    Args:
+    
+    Parameters:
         dataset (dataframe): original dataset
-        horizon (int, optional): horizon of time for witch we want a target price. Defaults to 7.
+        horizon (int): horizon of time for witch we want a target price. Defaults to 7
+        
     Returns:
-        dataset: dataset with new columns containing target prices.
+        dataset: dataset with new columns containing target prices
     """
     for i in range(1,horizon+1,1) :
         dataset["targetvalue_j{}".format(i)] = dataset["Close"].shift(-i)
